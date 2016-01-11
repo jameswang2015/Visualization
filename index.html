@@ -81,7 +81,8 @@
                     "ArrDelay%": d["ArrDelay%"],
                     "ArrDelayAverage": d["ArrDelayAverage"],
                     "DepDelay%": d["DepDelay%"],
-                    "DepDelayAverage": d["DepDelayAverage"]
+                    "DepDelayAverage": d["DepDelayAverage"],
+                    "Year": d["Year"]
                   };
         });
       }
@@ -110,7 +111,7 @@
       svg.append('g')
          .attr("class", "bubble")
          .selectAll("circle")
-         .data(nested)
+         .data(nested,function(d){return d["key"]})
          .enter()
          .append("circle")
          .attr("cx", function(d) { return d["values"][0]["Coords"][0]; })
@@ -124,7 +125,6 @@
 
       function update(year) {
 
-
         var selected_year = nested.filter(function(d){
             return +d["key"] === year;
         });
@@ -134,7 +134,7 @@
 
         //note the keys are the "year"+"Code"
         var circles = svg.select("g.bubble").selectAll("circle")
-                         .data(selected_year[0]["values"], function(d){return year.toString()+d["Code"]});
+                         .data(selected_year[0]["values"], function(d){return d["Year"]+d["Code"]});
 
         circles.exit().remove();
 
