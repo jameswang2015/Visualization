@@ -18,7 +18,7 @@
 
       div.years_buttons {
         position: fixed;
-        top: 5px;
+        top: 120px;
         left: 50px;
       }
 
@@ -43,7 +43,11 @@
 
         d3.select("body")
           .append("h2")
-          .text("US Domestic Flight: ");
+          .text("Top 20 busiest airports in US: ");
+
+        d3.select("body")
+          .append("p")
+          .text("This page visualizes the top 20 businest airports in US from 1987 to 2008. The base graph shows the businest airports at every given year - that's either Chicago Ohare Intl or Hartsfield Jackson Atlanta Int. The following animation shows the top 20 businest airports in any given year. Users can also select any year by clicking the corresponding button to see that particular year's info. Hover mouse on any circle will show detailed infomation on that airport represented by that circle.")
 
         var svg = d3.select("body")
             .append("svg")
@@ -130,7 +134,7 @@
         });
 
         d3.select("h2")
-          .text("US Domestic Flight: " + year);
+          .text("Top 20 busiest airports in US: " + year);
 
         //note the keys are the "year"+"Code"
         var circles = svg.select("g.bubble").selectAll("circle")
