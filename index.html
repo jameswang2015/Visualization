@@ -8,7 +8,7 @@
           fill: yellow;
           stroke: black;
           stroke-width: 0.7;
-
+          opacity: 0.5;
       }
 
       h2 {
@@ -47,7 +47,7 @@
 
         d3.select("body")
           .append("p")
-          .text("This page visualizes the top 20 businest airports in US from 1987 to 2008. The base graph shows the businest airports at every given year - that's either Chicago Ohare Intl or Hartsfield Jackson Atlanta Int. The following animation shows the top 20 businest airports in any given year. Users can also select any year by clicking the corresponding button to see that particular year's info. Hover mouse on any circle will show detailed infomation on that airport represented by that circle.")
+          .text("This page visualizes the top 20 businest airports in US from 1987 to 2008. The base graph shows the businest airports at every given year - that's either Chicago Ohare Intl or Hartsfield Jackson Atlanta Int. The following animation shows the top 20 businest airports in sequence. Users can also select any year by clicking the corresponding button to exploit the infomation for that year. Hover mouse on any circle will show detailed infomation on that airport represented by that circle.")
 
         var svg = d3.select("body")
             .append("svg")
@@ -195,8 +195,52 @@
 
                   update(d);
               })
+
+            var labelX = 1100
+            var labelY = 250
+
+            svg.append("text")
+               .text("Number of Flight Annually")
+               .attr("x", labelX)
+               .attr("y", labelY)
+               .attr("fill", "blue")
+
+            var labelCircle = [
+              {"x": labelX+10, "y": labelY+15, "r": radius(50000)},
+              {"x": labelX+10, "y": labelY+35, "r": radius(100000)},
+              {"x": labelX+10, "y": labelY+55, "r": radius(200000)},
+              {"x": labelX+10, "y": labelY+85, "r":radius(flight_max)}];
+
+            var labelText = [
+              {"x": labelX+30, "y": labelY+19, "message": "50000"},
+              {"x": labelX+30, "y": labelY+40, "message": "100000"},
+              {"x": labelX+30, "y": labelY+60, "message": "200000"},
+              {"x": labelX+30, "y": labelY+90, "message": flight_max}]
+
+            var svgLabel = svg.append("g")
+                              .attr("class","label")
+
+            svgLabel.selectAll("circle")
+                    .data(labelCircle)
+                    .enter()
+                    .append("circle")
+                    .attr("cx", function(d){ return d["x"]})
+                    .attr("cy", function(d){ return d["y"]})
+                    .attr("r", function(d){ return d["r"]})
+                    .attr("fill", "white");
+
+            svgLabel.selectAll("text")
+                    .data(labelText)
+                    .enter()
+                    .append("text")
+                    .text(function(d){ return d["message"]})
+                    .attr("x", function(d){ return d["x"]})
+                    .attr("y", function(d){ return d["y"]})
+                    .attr("font-size", "15px")
+
+
           }
-      }, 1000);
+      }, 1200);
 
     }
 
