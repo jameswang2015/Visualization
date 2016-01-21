@@ -5,15 +5,20 @@
   <script src="http://d3js.org/d3.v3.min.js"></script>
     <style>
       circle {
-          
+
           stroke: black;
           stroke-width: 0.7;
-          
+
       }
 
       h2 {
         text-align: center;
         color: blue;
+      }
+
+      li {
+      	text-align: center;
+      	color:blue;
       }
 
       div.years_buttons {
@@ -30,10 +35,13 @@
         font-weight:bold;
         border-radius:4px;
         border:1px solid #4b8f29;
+        cursor:pointer;
       }
 
     </style>
     <script type="text/javascript">
+      //"draw" function take geo data from map file gz_2010_us_040_00_500k.json
+      //and draw US map
       function draw(geo_data) {
         "use strict";
 
@@ -47,14 +55,26 @@
 
         d3.select("body")
           .append("p")
-          .text("This page visualizes the top 20 businest airports in US from 1987 to 2008. The base graph shows the businest airports at every given year - that's either Chicago Ohare Intl or Hartsfield Jackson Atlanta Int. The following animation shows the top 20 businest airports in sequence. Users can also select any year by clicking the corresponding button to exploit the infomation for that year. Hovering mouse on any circle will show detailed infomation of that particular year on that airport represented by that circle.")
+          .text("This page visualizes the top 20 busiest airports in US from 1987 to 2008. The base graph shows the busiest airports at every given year - that's either Chicago Ohare Intl or Hartsfield Jackson Atlanta Int. The following animation shows the top 20 busiest airports in sequence. Users can also select any year by clicking the corresponding button to exploit the infomation for that year. Hovering mouse on any circle will show detailed infomation of that particular year on that airport represented by that circle.")
+
+        d3.select("body")
+          .append("ul")
+          .append("li")
+          .text("In general airport delays get worse along the years, especially in the recent years from 2006 to 2008")
+          .append("li")
+          .text("The northeast airports get more delay than all the rest of countries in general.")
+          .append("li")
+          .text("Newark-Liberty International Airport is not the busiest airport but get the worst delay in recent years. This must be related to the airport's fundamental infrastructure such as gate shortages and air traffic control problems.")
+          .append("li")
+          .text("there are three airports serving NewYork area; the combined flights would rank top 2 of busiest airports");
 
         var svg = d3.select("body")
             .append("svg")
             .attr("width", width + margin)
             .attr("height", height + margin);
 
-        //draw US map
+        //draw US map. Note that albersUSA project is used here
+        //in order to move Alaska and Hawaii to the left-bottom cornor
         var projection = d3.geo.albersUsa()
                            .scale(1200)
                            .translate([width/2, height/1.6]);
@@ -72,8 +92,14 @@
                      .attr("stroke","black")
                      .attr("stroke-width", 0.5);
 
+    //"plot_flight" function takes "flight_US.json" file as input
+    //and draw airport information on map. flight_US.json is the
+    //pre-processed file that include all top20 airports information in
+    //the given years from 1987 to 2008.
     function plot_flight(data){
 
+      //"each_year" function returns the desired information (as listed in the following "return")
+      //for all top 20 airports in every given year. it's rollup function as a part of d3.nest function
       function each_year(leaves){
 
         return leaves.map(function(d){
@@ -97,11 +123,11 @@
                      })
                      .rollup(each_year)
                      .entries(data);
-      
+
       var flight_max = d3.max(nested, function(d){
           return d["values"][0]["Flight#"] //the 1st airport has the most flight# in each year
       });
-      
+
       var delay_max = d3.max(nested, function(d) {
       		return d3.max(d["values"], function(d){
       			return d["ArrDelay%"].slice(0,d["ArrDelay%"].length-1)*d["ArrDelayAverage"]+
@@ -111,21 +137,21 @@
       		return d3.max(d["values"], function(d){
       			return d["ArrDelay%"].slice(0,d["ArrDelay%"].length-1)*d["ArrDelayAverage"]+
       				   d["DepDelay%"].slice(0,d["DepDelay%"].length-1)*d["DepDelayAverage"]})});
-      
+
       var radius = d3.scale.sqrt()
                      .domain([0,flight_max])
                      .range([0,15]);
-      
+
       var colorFill = d3.scale.linear()
       					.domain([delay_min,delay_max])
       					.range(["lime", "red"]);
-      
+
       var opacity_circle = d3.scale.linear()
                              .domain([0,flight_max])
                              .range([0,1]);
 
       //the base of the martini glass shows the busiest airports each year
-      //note that only two airports are the businest one along the given years
+      //note that only two airports are the businest ones along the given years
       svg.append('g')
          .attr("class", "bubble")
          .selectAll("circle")
@@ -138,10 +164,102 @@
          .attr("fill", function(d) { return colorFill(d["values"][0]["ArrDelay%"].slice(0,d["values"][0]["ArrDelay%"].length-1)*d["values"][0]["ArrDelayAverage"]
      												 +d["values"][0]["DepDelay%"].slice(0,d["values"][0]["DepDelay%"].length-1)*d["values"][0]["DepDelayAverage"])});
 
-      
-      //here is the martini stem with animation
+    //below is to create legends
+    var labelX = 1100
+    var labelY = 250
+
+    //this is for circle size representing the flight number of each airport
+    svg.append("text")
+       .text("Number of Flights Annually")
+       .attr("x", labelX)
+       .attr("y", labelY)
+       .attr("fill", "blue")
+
+    var labelCircle = [
+      {"x": labelX+10, "y": labelY+15, "r": radius(50000)},
+      {"x": labelX+10, "y": labelY+35, "r": radius(100000)},
+      {"x": labelX+10, "y": labelY+55, "r": radius(200000)},
+      {"x": labelX+10, "y": labelY+85, "r":radius(flight_max)}];
+
+    var labelText = [
+      {"x": labelX+30, "y": labelY+19, "message": "50000"},
+      {"x": labelX+30, "y": labelY+40, "message": "100000"},
+      {"x": labelX+30, "y": labelY+60, "message": "200000"},
+      {"x": labelX+30, "y": labelY+90, "message": flight_max}]
+
+    var svgLabel = svg.append("g")
+                      .attr("class","label_1")
+
+    svgLabel.selectAll("circle")
+            .data(labelCircle)
+            .enter()
+            .append("circle")
+            .attr("cx", function(d){ return d["x"]})
+            .attr("cy", function(d){ return d["y"]})
+            .attr("r", function(d){ return d["r"]})
+            .attr("fill", "white");
+
+    svgLabel.selectAll("text")
+            .data(labelText)
+            .enter()
+            .append("text")
+            .text(function(d){ return d["message"]})
+            .attr("x", function(d){ return d["x"]})
+            .attr("y", function(d){ return d["y"]})
+            .attr("font-size", "15px")
+
+    //this is for color coding representing the airport delay index
+    //defined as ArrDelay% * ArrDelayAverage + DepDelay% * DepDelayAverage
+    svg.append("text")
+       .text("Flight Delay Per Airport")
+       .attr("x", labelX)
+       .attr("y", labelY+130)
+       .attr("fill", "blue")
+
+    var labelRect = [
+    	{"x": labelX+10, "y": labelY+145, "height": 10, "width": 15, "delayIndex":delay_min, "degree": "minimum"},
+    	{"x": labelX+10, "y": labelY+170, "height": 10, "width": 15, "delayIndex":1402, "degree": "light"},
+    	{"x": labelX+10, "y": labelY+195, "height": 10, "width": 15, "delayIndex":1776, "degree": "average"},
+    	{"x": labelX+10, "y": labelY+220, "height": 10, "width": 15, "delayIndex":2150, "degree": "heavy"},
+    	{"x": labelX+10, "y": labelY+245, "height": 10, "width": 15, "delayIndex":delay_max, "degree": "maximum"}];
+
+    var labelText2 = [
+    	{"x": labelX+30, "y": labelY+155, "degree": "minimum"},
+    	{"x": labelX+30, "y": labelY+180, "degree": "light"},
+    	{"x": labelX+30, "y": labelY+205, "degree": "average"},
+    	{"x": labelX+30, "y": labelY+230, "degree": "heavy"},
+    	{"x": labelX+30, "y": labelY+255, "degree": "maximum"}]
+
+    var svgLabel2 = svg.append("g")
+    				   .attr("class", "label_2")
+
+    svgLabel2.selectAll("rect")
+    		.data(labelRect)
+    		.enter()
+    		.append("rect")
+    		.attr("x", function(d) { return d["x"]})
+    		.attr("y", function(d) { return d["y"]})
+    		.attr("height", function(d) { return d["height"]})
+    		.attr("width", function(d) { return d["width"]})
+    		.attr("fill", function(d) {return colorFill(d["delayIndex"])});
+
+    svgLabel2.selectAll("text")
+    		 .data(labelText2)
+    		 .enter()
+    		 .append("text")
+    		 .text(function(d) { return d["degree"]})
+    		 .attr("x", function(d){ return d["x"]})
+    		 .attr("y", function(d){ return d["y"]})
+    		 .attr("font-size", "15px");
+
+      //here is the martini stem with animation. this animation shows top 20 busiest airports
+      //(represented by circles) in US map starting from 2987 and ending at 2008. the circle
+      //area represents the flight volumn and the circle color represents the delay scale.
+      //the bigger the circle is the more flight it represents; and the more greenish the
+      //cirle is the lighter the delay is while more reddish represents more heavy delay.
       var years = d3.range(1987,2009);
 
+      //update function is to remove existing circles and add new circles corresponding to that particular "year"
       function update(year) {
 
         var selected_year = nested.filter(function(d){
@@ -168,7 +286,7 @@
                .text(function(d){
                   return d["Code"]
                          + "\nAirport Name: " + d["Name"]
-                         + "\nFlight#: " + d["Flight#"]
+                         + "\nNumber of Flight: " + d["Flight#"]
                          + "\nAverage Arrival Delay(min): " + d["ArrDelayAverage"]
                          + "\nPercentage of Arrival Delay: " + d["ArrDelay%"]
                          + "\nAverage Departure Delay(min): " + d["DepDelayAverage"]
@@ -179,6 +297,7 @@
 
       var year_index = 0;
 
+      //this is for animation to update each year info with 1200 second interval
       var year_interval = setInterval(function(){
           update(years[year_index]);
 
@@ -187,6 +306,7 @@
           if(year_index >= years.length) {
               clearInterval(year_interval);
 
+              //once year animation completes, show buttons on the left of the page
               var buttons = d3.select("body")
                               .append("div")
                               .attr("class", "years_buttons")
@@ -213,101 +333,10 @@
                   update(d);
               })
 
-            //below is to create legends
-            var labelX = 1100
-            var labelY = 250
-
-            //this is for circle size representing the flight number of each airport
-            svg.append("text")
-               .text("Number of Flights Annually")
-               .attr("x", labelX)
-               .attr("y", labelY)
-               .attr("fill", "blue")
-
-            var labelCircle = [
-              {"x": labelX+10, "y": labelY+15, "r": radius(50000)},
-              {"x": labelX+10, "y": labelY+35, "r": radius(100000)},
-              {"x": labelX+10, "y": labelY+55, "r": radius(200000)},
-              {"x": labelX+10, "y": labelY+85, "r":radius(flight_max)}];
-
-            var labelText = [
-              {"x": labelX+30, "y": labelY+19, "message": "50000"},
-              {"x": labelX+30, "y": labelY+40, "message": "100000"},
-              {"x": labelX+30, "y": labelY+60, "message": "200000"},
-              {"x": labelX+30, "y": labelY+90, "message": flight_max}]
-
-            var svgLabel = svg.append("g")
-                              .attr("class","label_1")
-
-            svgLabel.selectAll("circle")
-                    .data(labelCircle)
-                    .enter()
-                    .append("circle")
-                    .attr("cx", function(d){ return d["x"]})
-                    .attr("cy", function(d){ return d["y"]})
-                    .attr("r", function(d){ return d["r"]})
-                    .attr("fill", "white");
-
-            svgLabel.selectAll("text")
-                    .data(labelText)
-                    .enter()
-                    .append("text")
-                    .text(function(d){ return d["message"]})
-                    .attr("x", function(d){ return d["x"]})
-                    .attr("y", function(d){ return d["y"]})
-                    .attr("font-size", "15px")
-
-            //this is for color coding representing the airport delay index
-            //defined as ArrDelay% * ArrDelayAverage + DepDelay% * DepDelayAverage
-            svg.append("text")
-               .text("Flight Delay Per Airport")
-               .attr("x", labelX)
-               .attr("y", labelY+130)
-               .attr("fill", "blue")
-
-            var labelRect = [
-            	{"x": labelX+10, "y": labelY+145, "height": 10, "width": 15, "delayIndex":delay_min, "degree": "minimum"},
-            	{"x": labelX+10, "y": labelY+170, "height": 10, "width": 15, "delayIndex":1402, "degree": "light"},
-            	{"x": labelX+10, "y": labelY+195, "height": 10, "width": 15, "delayIndex":1776, "degree": "average"},
-            	{"x": labelX+10, "y": labelY+220, "height": 10, "width": 15, "delayIndex":2150, "degree": "heavy"},
-            	{"x": labelX+10, "y": labelY+245, "height": 10, "width": 15, "delayIndex":delay_max, "degree": "maximum"}];
-
-            var labelText2 = [
-            	{"x": labelX+30, "y": labelY+155, "degree": "minimum"},
-            	{"x": labelX+30, "y": labelY+180, "degree": "light"},
-            	{"x": labelX+30, "y": labelY+205, "degree": "average"},
-            	{"x": labelX+30, "y": labelY+230, "degree": "heavy"},
-            	{"x": labelX+30, "y": labelY+255, "degree": "maximum"}]
-
-            var svgLabel2 = svg.append("g")
-            				   .attr("class", "label_2")
-
-            svgLabel2.selectAll("rect")
-            		.data(labelRect)
-            		.enter()
-            		.append("rect")
-            		.attr("x", function(d) { return d["x"]})
-            		.attr("y", function(d) { return d["y"]})
-            		.attr("height", function(d) { return d["height"]})
-            		.attr("width", function(d) { return d["width"]})
-            		.attr("fill", function(d) {return colorFill(d["delayIndex"])});
-
-            svgLabel2.selectAll("text")
-            		 .data(labelText2)
-            		 .enter()
-            		 .append("text")
-            		 .text(function(d) { return d["degree"]})
-            		 .attr("x", function(d){ return d["x"]})
-            		 .attr("y", function(d){ return d["y"]})
-            		 .attr("font-size", "15px");
-
-
           }
       }, 1200);
 
     }
-
-
 
     d3.json("flight_US.json",plot_flight);
       }
