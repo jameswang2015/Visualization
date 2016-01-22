@@ -14,9 +14,18 @@
       h2 {
         text-align: center;
         color: blue;
+
+      }
+
+      h2.year{
+      	text-align: center;
+      	color: red;
+      	display: inline;
+      	font-size: 100%;
       }
 
       li {
+      	list-style-position: inside;
       	text-align: center;
       	color:blue;
       }
@@ -64,9 +73,11 @@
           .append("li")
           .text("The northeast airports get more delay than all the rest of countries in general.")
           .append("li")
-          .text("Newark-Liberty International Airport is not the busiest airport but get the worst delay in recent years. This must be related to the airport's fundamental infrastructure such as gate shortages and air traffic control problems.")
+          .text("Newark-Liberty International Airport is not the busiest airport but get the worst delay in recent years. This could be related to the airport's fundamental infrastructure such as gate shortages and air traffic control problems.")
           .append("li")
-          .text("there are three airports serving NewYork area; the combined flights would rank top 2 of busiest airports");
+          .text("there are three airports serving NewYork area; the combined flights would rank top 2 of busiest airports")
+          .append("li")
+          .text("West develops a bit faster than East. In 1987, there were only 5 airports from West listed in top20; In 2000 it increased to 6 and in 2008 it reached 7. Seattle and SaltLakeCity are of those fastest progressed.");
 
         var svg = d3.select("body")
             .append("svg")
@@ -117,6 +128,8 @@
         });
       }
 
+      //nested will be an array of elements with year as key and top 20 busiest airports info
+      //as value
       var nested = d3.nest()
                      .key(function(d){
                         return d["Year"]
@@ -138,10 +151,13 @@
       			return d["ArrDelay%"].slice(0,d["ArrDelay%"].length-1)*d["ArrDelayAverage"]+
       				   d["DepDelay%"].slice(0,d["DepDelay%"].length-1)*d["DepDelayAverage"]})});
 
+      //note that sqrt() is used to correctly use circle area instead of radius to propotionally
+      //represent number of flight per airport
       var radius = d3.scale.sqrt()
                      .domain([0,flight_max])
                      .range([0,15]);
 
+      //colorFill function is used to color code airports based on airport delay index.
       var colorFill = d3.scale.linear()
       					.domain([delay_min,delay_max])
       					.range(["lime", "red"]);
@@ -224,11 +240,11 @@
     	{"x": labelX+10, "y": labelY+245, "height": 10, "width": 15, "delayIndex":delay_max, "degree": "maximum"}];
 
     var labelText2 = [
-    	{"x": labelX+30, "y": labelY+155, "degree": "minimum"},
-    	{"x": labelX+30, "y": labelY+180, "degree": "light"},
-    	{"x": labelX+30, "y": labelY+205, "degree": "average"},
-    	{"x": labelX+30, "y": labelY+230, "degree": "heavy"},
-    	{"x": labelX+30, "y": labelY+255, "degree": "maximum"}]
+    	{"x": labelX+30, "y": labelY+155, "degree": "minimum", "delayIndex":delay_min},
+    	{"x": labelX+30, "y": labelY+180, "degree": "light", "delayIndex":1402},
+    	{"x": labelX+30, "y": labelY+205, "degree": "average", "delayIndex":1776},
+    	{"x": labelX+30, "y": labelY+230, "degree": "heavy", "delayIndex":2150},
+    	{"x": labelX+30, "y": labelY+255, "degree": "maximum", "delayIndex":delay_max}];
 
     var svgLabel2 = svg.append("g")
     				   .attr("class", "label_2")
@@ -267,14 +283,20 @@
         });
 
         d3.select("h2")
-          .text("Top 20 busiest airports in US: " + year);
+          .text("Top 20 busiest airports in US: ")
+          .append("h2")
+          .attr("class","year")
+          .text(year);
 
         //note the keys are the "year"+"Code"
         var circles = svg.select("g.bubble").selectAll("circle")
                          .data(selected_year[0]["values"], function(d){return d["Year"]+d["Code"]});
 
+        //exit() include all existing circles that don't have new data attached with.
+        //they will be removed
         circles.exit().remove();
 
+        //enter() include all the new data that are pending attached to circles.
         circles.enter()
                .append("circle")
                .attr("cx",function(d) { return d["Coords"][0];})
