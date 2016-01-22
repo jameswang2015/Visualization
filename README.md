@@ -14,12 +14,15 @@ Also notice the circle area instead of radius is encoded to represent the number
 ##Feedback
 1. From the first feedback of matthew_240343, I changed the title and added the narrative to make the story clearer to readers. This is showed in GitHub commit “Update title and add description”.
 
-2. From the second feedback, I added legend to show the relationship of the circle size and the corresponding flight number – a larger circle represents busier airport with more flights. Note that here I use circle area (not circle radius) to correctly show the difference of airport traffic proportionally. This is showed at GitHub commit “version3: add legend for size of flight number”
-In commit “Final version4”, I applied diverse color coding to each airport (circle) based on the delay index defined in following formula:
+2. From the second feedback, I added legend to show the relationship of the circle size and the corresponding flight number – a larger circle represents busier airport with more flights. Note that here I use circle area (not circle radius) to correctly show the difference of airport traffic proportionally. This is showed at GitHub commit “version3: add legend for size of flight number”.
+
+3. In commit “Final version4”, I applied diverse color coding to each airport (circle) based on the delay index defined in following formula:
+
 ArrDelay%* ArrDelayAverage+DepDelay%* DepDelayAverage
+
 Corresponding legends are added as well. The airports with minimum delay is colored with “lime” and then gradually changed to “red” which represents the worst delay airport. Using diverse color coding can make the transition from light to heavy delay more smoothly and intuitively.
 
-3. From the third feedback of ucaiado, I moved the legend of color and size to the beginning of the animation so that users can follow up with what is happening throughout the animation. Also, some bullet notes are added to show the story to readers. These changes are all reflected in the final GitHub commit “moved legend, add bullet notes”.
+4. From the third feedback of ucaiado, I moved the legend of color and size to the beginning of the animation so that users can follow up with what is happening throughout the animation. Also, some bullet notes are added to show the story to readers. These changes are all reflected in the final GitHub commit “moved legend, add bullet notes”.
 
 ##Resource
 * [GEOJSON AND KML DATA FOR THE UNITED STATES](http://eric.clst.org/Stuff/USGeoJSON)
