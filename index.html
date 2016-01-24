@@ -24,6 +24,11 @@
       	font-size: 100%;
       }
 
+      div.points {
+        margin: 0 auto;
+        text-align: center;
+      }
+
       li {
       	list-style-position: inside;
       	text-align: center;
@@ -67,17 +72,19 @@
           .text("This page visualizes the top 20 busiest airports in US from 1987 to 2008. The base graph shows the busiest airports at every given year - that's either Chicago Ohare Intl or Hartsfield Jackson Atlanta Int. The following animation shows the top 20 busiest airports in sequence. Users can also select any year by clicking the corresponding button to exploit the infomation for that year. Hovering mouse on any circle will show detailed infomation of that particular year on that airport represented by that circle.")
 
         d3.select("body")
+          .append("div")
+          .attr("class", "points")
           .append("ul")
           .append("li")
           .text("In general airport delays get worse along the years, especially in the recent years from 2006 to 2008")
           .append("li")
-          .text("The northeast airports get more delay than all the rest of countries in general.")
+          .text("The northeast airports get more delay than all the rest of countries in general while west region is overall better than average.")
           .append("li")
           .text("Newark-Liberty International Airport is not the busiest airport but get the worst delay in recent years. This could be related to the airport's fundamental infrastructure such as gate shortages and air traffic control problems.")
           .append("li")
-          .text("there are three airports serving NewYork area; the combined flights would rank top 2 of busiest airports")
+          .text("There are three airports serving NewYork area; the combined flights would rank top 2 of busiest airports")
           .append("li")
-          .text("West develops a bit faster than East. In 1987, there were only 5 airports from West listed in top20; In 2000 it increased to 6 and in 2008 it reached 7. Seattle and SaltLakeCity are of those fastest progressed.");
+          .text("Closely comparing 2000, 2001, 2002 and 2003, we can see the traffic drops and delay get eased a bit around 2001 and then gradually increased and worsened again after 2003, this shows the impact of 911 on the entrie airline industry.");
 
         var svg = d3.select("body")
             .append("svg")
