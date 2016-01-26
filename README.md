@@ -14,15 +14,15 @@ Going through each year readers can easily tell the traffic grows and flight del
 Also notice the circle area instead of radius is encoded to represent the number of flights to avoid overrepresentation.
 
 ##Feedback
-1. From the first feedback of matthew_240343, I changed the title and added the narrative to make the story clearer to readers. This is showed in GitHub commit *fbee756*:“Update title and add description”.
+1. From the first feedback of matthew_240343, I changed the title and added the narrative to make the story clearer to readers. This is showed in **“index_version1”**.
 
-2. From the second feedback of my wife, I added legend to show the relationship of the circle size and the corresponding flight number – a larger circle represents busier airport with more flights. Note that here I use circle area (not circle radius) to correctly show the difference of airport traffic proportionally. This is showed at GitHub commit *575a8e5*:“version3: add legend for size of flight number”
+2. From the second feedback of my wife, I added legend to show the relationship of the circle size and the corresponding flight number – a larger circle represents busier airport with more flights. Note that here I use circle area (not circle radius) to correctly show the difference of airport traffic proportionally. This is showed at **“index_version2”**.
 
-3. In commit *e3392f1*:“Final version4:diverse color coding airport delay and create legend”, I applied diverse color coding to each airport (circle) based on the delay index defined in following formula: ArrDelay%* ArrDelayAverage+DepDelay%* DepDelayAverage. Corresponding legends are added as well. The airports with minimum delay is colored with “lime” and then gradually changed to “red” which represents the worst delay airport. Using diverse color coding can make the transition from light to heavy delay more smoothly and intuitively.
+3. In **“index_version3”**, I applied diverse color coding to each airport (circle) based on the delay index defined in following formula: ArrDelay%* ArrDelayAverage+DepDelay%* DepDelayAverage. Corresponding legends are added as well. The airports with minimum delay is colored with “lime” and then gradually changed to “red” which represents the worst delay airport. Using diverse color coding can make the transition from light to heavy delay more smoothly and intuitively.
 
-4. From the third feedback of ucaiado, I moved the legend of color and size to the beginning of the animation so that users can follow up with what is happening throughout the animation. Also, some bullet notes are added to show the story to readers. These changes are all reflected in the final GitHub commit *63c1c6f*:“moved legend, add bullet notes”.
+4. From the third feedback of ucaiado, I moved the legend of color and size to the beginning of the animation so that users can follow up with what is happening throughout the animation. Also, some bullet notes are added to show the story to readers. These changes are all reflected in **“index_version4”**.
 
-5. From the fourth feedback of my colleague, I applied different color (red) for each individual year in the title and added more story in the bullet notes. This is final commit showed in *8e68cdc*:”update title and bullet notes”. 
+5. From the fourth feedback of my colleague, I applied different color (red) for each individual year in the title and added more story in the bullet notes. This is final version showed in **“index”**. 
 
 
 ##Resource
